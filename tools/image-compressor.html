@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Compressor - Multi-Tools</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-container"></div>
+
+    <main class="container my-4">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>Image Compressor</h1>
+                <p class="lead">Compress your images while maintaining quality</p>
+            </div>
+
+            <div class="tool-content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="imageInput" class="form-label">Select Image</label>
+                            <input type="file" class="form-control" id="imageInput" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label for="quality" class="form-label">Compression Quality (1-100)</label>
+                            <input type="range" class="form-range" id="quality" min="1" max="100" value="80">
+                            <div class="text-center" id="qualityValue">80%</div>
+                        </div>
+                        <div class="mb-3">
+                            <button id="compressBtn" class="btn btn-primary w-100">Compress Image</button>
+                        </div>
+                        <div class="alert alert-info">
+                            <div>Original Size: <span id="originalSize">0 KB</span></div>
+                            <div>Compressed Size: <span id="compressedSize">0 KB</span></div>
+                            <div>Reduction: <span id="reduction">0%</span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="preview-container text-center">
+                            <img id="preview" class="img-fluid mb-3" style="display: none;">
+                            <div id="downloadContainer" style="display: none;">
+                                <a id="downloadLink" class="btn btn-success" download="compressed.jpg">
+                                    <i class="fas fa-download"></i> Download Compressed Image
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-container"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="../js/main.js"></script>
+    <!-- Tool specific JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageInput = document.getElementById('imageInput');
+            const compressBtn = document.getElementById('compressBtn');
+            const preview = document.getElementById('preview');
+            const downloadContainer = document.getElementById('downloadContainer');
+            const downloadLink = document.getElementById('downloadLink');
+            const qualitySlider = document.getElementById('quality');
+            const qualityValue = document.getElementById('qualityValue');
+            const originalSize = document.getElementById('originalSize');
+            const compressedSize = document.getElementById('compressedSize');
+            const reduction = document.getElementById('reduction');
+
+            let originalFileSize = 0;
+
+            qualitySlider.addEventListener('input', function() {
+                qualityValue.textContent = this.value + '%';
+            });
+
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    originalFileSize = file.size;
+                    originalSize.textContent = formatFileSize(originalFileSize);
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            compressBtn.addEventListener('click', function() {
+                const file = imageInput.files[0];
+                if (!file) {
+                    alert('Please select an image first');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+
+                        const quality = qualitySlider.value / 100;
+                        const compressedData = canvas.toDataURL('image/jpeg', quality);
+                        
+                        // Calculate compressed size
+                        const compressedFileSize = Math.round((compressedData.length - compressedData.indexOf(',') - 1) * 0.75);
+                        compressedSize.textContent = formatFileSize(compressedFileSize);
+                        
+                        // Calculate reduction percentage
+                        const reductionPercentage = ((originalFileSize - compressedFileSize) / originalFileSize * 100).toFixed(2);
+                        reduction.textContent = reductionPercentage + '%';
+                        
+                        downloadLink.href = compressedData;
+                        downloadContainer.style.display = 'block';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+</body>
+</html> 

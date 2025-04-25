@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Address Tracker - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .result-card {
+            display: none;
+            margin-top: 2rem;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .ip-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .detail-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #0d6efd;
+        }
+        .detail-item h6 {
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+        .detail-item p {
+            margin: 0;
+            font-weight: 500;
+        }
+        .map-container {
+            height: 300px;
+            margin-top: 1rem;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">IP Address Tracker</h2>
+            <p class="text-center text-muted mb-4">Track and locate any IP address with detailed information</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="ipInput" placeholder="Enter IP address or domain">
+                        <button class="btn btn-primary" id="trackBtn">
+                            <i class="bi bi-search"></i> Track
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-outline-primary" id="myIpBtn">
+                            <i class="bi bi-geo-alt"></i> Use My IP
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Tracking IP address...</p>
+            </div>
+
+            <div class="result-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">IP Address Details</h5>
+                        <div class="ip-details">
+                            <div class="detail-item">
+                                <h6>IP Address</h6>
+                                <p id="ipAddress">-</p>
+                            </div>
+                            <div class="detail-item">
+                                <h6>Location</h6>
+                                <p id="location">-</p>
+                            </div>
+                            <div class="detail-item">
+                                <h6>ISP</h6>
+                                <p id="isp">-</p>
+                            </div>
+                            <div class="detail-item">
+                                <h6>Timezone</h6>
+                                <p id="timezone">-</p>
+                            </div>
+                            <div class="detail-item">
+                                <h6>Organization</h6>
+                                <p id="org">-</p>
+                            </div>
+                            <div class="detail-item">
+                                <h6>AS Number</h6>
+                                <p id="as">-</p>
+                            </div>
+                        </div>
+                        <div class="map-container" id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map
+        let map;
+        let marker;
+
+        function initMap(lat, lng) {
+            const mapElement = document.getElementById('map');
+            map = new google.maps.Map(mapElement, {
+                center: { lat, lng },
+                zoom: 12
+            });
+            
+            if (marker) {
+                marker.setMap(null);
+            }
+            
+            marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map
+            });
+        }
+
+        // Track IP address
+        async function trackIP(ip) {
+            const loading = document.querySelector('.loading');
+            const resultCard = document.querySelector('.result-card');
+            
+            loading.style.display = 'block';
+            resultCard.style.display = 'none';
+            
+            try {
+                // In a real implementation, you would use an IP geolocation API
+                // For demo purposes, we'll use mock data
+                const mockData = {
+                    ip: ip || '192.168.1.1',
+                    location: 'New York, NY, USA',
+                    isp: 'Example ISP',
+                    timezone: 'UTC-5',
+                    org: 'Example Organization',
+                    as: 'AS12345',
+                    lat: 40.7128,
+                    lng: -74.0060
+                };
+
+                // Update UI with IP details
+                document.getElementById('ipAddress').textContent = mockData.ip;
+                document.getElementById('location').textContent = mockData.location;
+                document.getElementById('isp').textContent = mockData.isp;
+                document.getElementById('timezone').textContent = mockData.timezone;
+                document.getElementById('org').textContent = mockData.org;
+                document.getElementById('as').textContent = mockData.as;
+
+                // Update map
+                initMap(mockData.lat, mockData.lng);
+
+                loading.style.display = 'none';
+                resultCard.style.display = 'block';
+            } catch (error) {
+                console.error('Error tracking IP:', error);
+                loading.style.display = 'none';
+                alert('Error tracking IP address. Please try again.');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('trackBtn').addEventListener('click', () => {
+            const ip = document.getElementById('ipInput').value.trim();
+            if (ip) {
+                trackIP(ip);
+            } else {
+                alert('Please enter an IP address or domain');
+            }
+        });
+
+        document.getElementById('myIpBtn').addEventListener('click', () => {
+            // In a real implementation, you would get the user's IP
+            // For demo purposes, we'll use a placeholder
+            document.getElementById('ipInput').value = '';
+            trackIP();
+        });
+
+        // Load Google Maps API
+        function loadGoogleMaps() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap`;
+            script.defer = true;
+            script.async = true;
+            document.head.appendChild(script);
+        }
+
+        // Initialize
+        loadGoogleMaps();
+    </script>
+</body>
+</html> 

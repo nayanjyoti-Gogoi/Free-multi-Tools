@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan EMI Calculator - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .result-card {
+            background-color: #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        .emi-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .summary-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .payment-schedule {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+        .schedule-table {
+            font-size: 0.9rem;
+        }
+        .schedule-table th {
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">Loan EMI Calculator</h2>
+            <p class="text-center text-muted mb-4">Calculate your monthly EMI and view detailed payment schedule</p>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="loanAmount" class="form-label">Loan Amount:</label>
+                    <div class="input-group">
+                        <select class="form-select" id="currency" style="max-width: 100px;">
+                            <option value="USD">$</option>
+                            <option value="EUR">€</option>
+                            <option value="GBP">£</option>
+                            <option value="JPY">¥</option>
+                            <option value="INR">₹</option>
+                            <option value="AUD">A$</option>
+                            <option value="CAD">C$</option>
+                        </select>
+                        <input type="number" class="form-control" id="loanAmount" placeholder="Enter loan amount">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="interestRate" class="form-label">Annual Interest Rate:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="interestRate" placeholder="Enter interest rate">
+                        <span class="input-group-text">%</span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="loanTerm" class="form-label">Loan Term:</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="loanTerm" placeholder="Enter loan term">
+                        <select class="form-select" id="termUnit">
+                            <option value="years">Years</option>
+                            <option value="months">Months</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="startDate" class="form-label">Start Date:</label>
+                    <input type="date" class="form-control" id="startDate">
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-primary" id="calculateButton">Calculate EMI</button>
+                <button class="btn btn-secondary" id="clearButton">Clear</button>
+            </div>
+
+            <div class="result-card" id="resultCard">
+                <h5 class="mb-3">Loan Summary</h5>
+                <div class="emi-value" id="emiValue">$0</div>
+                <div class="text-center text-muted mb-3">Monthly Payment</div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="summary-item">
+                            <span>Total Interest:</span>
+                            <span class="float-end" id="totalInterest">$0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Total Payment:</span>
+                            <span class="float-end" id="totalPayment">$0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="summary-item">
+                            <span>Loan Term:</span>
+                            <span class="float-end" id="displayTerm">0 months</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Interest Rate:</span>
+                            <span class="float-end" id="displayRate">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3">Payment Schedule</h6>
+                <div class="payment-schedule">
+                    <div class="d-flex justify-content-end mb-2">
+                        <button class="btn btn-sm btn-success" id="downloadButton">
+                            <i class="bi bi-download"></i> Download Schedule
+                        </button>
+                    </div>
+                    <table class="table table-striped schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Payment</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const resultCard = document.getElementById('resultCard');
+        const emiValue = document.getElementById('emiValue');
+        const totalInterest = document.getElementById('totalInterest');
+        const totalPayment = document.getElementById('totalPayment');
+        const displayTerm = document.getElementById('displayTerm');
+        const displayRate = document.getElementById('displayRate');
+        const scheduleBody = document.getElementById('scheduleBody');
+        const calculateButton = document.getElementById('calculateButton');
+        const clearButton = document.getElementById('clearButton');
+        const currencySelect = document.getElementById('currency');
+        const downloadButton = document.getElementById('downloadButton');
+
+        function getCurrencySymbol() {
+            return currencySelect.options[currencySelect.selectedIndex].text;
+        }
+
+        function formatCurrency(amount) {
+            const symbol = getCurrencySymbol();
+            return `${symbol}${amount.toFixed(2)}`;
+        }
+
+        function calculateEMI() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value);
+            const termUnit = document.getElementById('termUnit').value;
+            const startDate = new Date(document.getElementById('startDate').value);
+
+            if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanTerm) || !startDate) {
+                alert('Please enter valid values for all fields');
+                return;
+            }
+
+            const monthlyRate = interestRate / 100 / 12;
+            const numberOfPayments = termUnit === 'years' ? loanTerm * 12 : loanTerm;
+
+            // Calculate EMI
+            const emi = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments) / (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+            const totalPaymentAmount = emi * numberOfPayments;
+            const totalInterestAmount = totalPaymentAmount - loanAmount;
+
+            // Update summary with currency symbol
+            emiValue.textContent = formatCurrency(emi);
+            totalInterest.textContent = formatCurrency(totalInterestAmount);
+            totalPayment.textContent = formatCurrency(totalPaymentAmount);
+            displayTerm.textContent = `${numberOfPayments} months`;
+            displayRate.textContent = `${interestRate}%`;
+
+            // Generate payment schedule
+            let balance = loanAmount;
+            scheduleBody.innerHTML = '';
+
+            for (let i = 0; i < numberOfPayments; i++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = emi - interestPayment;
+                balance -= principalPayment;
+
+                const paymentDate = new Date(startDate);
+                paymentDate.setMonth(paymentDate.getMonth() + i);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${paymentDate.toLocaleDateString()}</td>
+                    <td>${formatCurrency(emi)}</td>
+                    <td>${formatCurrency(principalPayment)}</td>
+                    <td>${formatCurrency(interestPayment)}</td>
+                    <td>${formatCurrency(Math.max(0, balance))}</td>
+                `;
+                scheduleBody.appendChild(row);
+            }
+
+            resultCard.style.display = 'block';
+        }
+
+        function generateCSV() {
+            const rows = [];
+            const headers = ['Payment Date', 'Payment', 'Principal', 'Interest', 'Balance'];
+            rows.push(headers);
+
+            const tableRows = scheduleBody.getElementsByTagName('tr');
+            for (let row of tableRows) {
+                const cells = row.getElementsByTagName('td');
+                const rowData = Array.from(cells).map(cell => cell.textContent);
+                rows.push(rowData);
+            }
+
+            return rows.map(row => row.join(',')).join('\n');
+        }
+
+        function downloadCSV() {
+            if (!resultCard.style.display || resultCard.style.display === 'none') {
+                alert('Please calculate the EMI first to download the schedule');
+                return;
+            }
+
+            const csvContent = generateCSV();
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const loanAmount = document.getElementById('loanAmount').value;
+            const currency = document.getElementById('currency').value;
+            const fileName = `loan_schedule_${currency}${loanAmount}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        calculateButton.addEventListener('click', calculateEMI);
+
+        clearButton.addEventListener('click', () => {
+            const inputs = document.querySelectorAll('input[type="number"], input[type="date"]');
+            inputs.forEach(input => input.value = '');
+            currencySelect.value = 'USD'; // Reset to default currency
+            resultCard.style.display = 'none';
+        });
+
+        downloadButton.addEventListener('click', downloadCSV);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech to Text - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        #result {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .recording-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: #dc3545;
+            margin-bottom: 1rem;
+        }
+        .recording-indicator.active {
+            display: flex;
+        }
+        .recording-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #dc3545;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+            100% { transform: scale(1); }
+        }
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">Speech to Text</h2>
+            <p class="text-center text-muted mb-4">Convert your speech into text</p>
+            
+            <div class="recording-indicator">
+                <div class="recording-dot"></div>
+                <span>Recording...</span>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="startButton">
+                    <i class="bi bi-mic-fill"></i> Start Recording
+                </button>
+                <button class="btn btn-danger" id="stopButton" disabled>
+                    <i class="bi bi-stop-fill"></i> Stop Recording
+                </button>
+                <button class="btn btn-secondary" id="clearButton">
+                    <i class="bi bi-trash"></i> Clear Text
+                </button>
+                <button class="btn btn-outline-primary" id="copyButton">
+                    <i class="bi bi-clipboard"></i> Copy Text
+                </button>
+            </div>
+
+            <div class="mb-3">
+                <label for="result" class="form-label">Transcription:</label>
+                <textarea class="form-control" id="result" placeholder="Your transcribed text will appear here..." readonly></textarea>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Note: This tool requires microphone access and works best in modern browsers.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const clearButton = document.getElementById('clearButton');
+        const copyButton = document.getElementById('copyButton');
+        const result = document.getElementById('result');
+        const recordingIndicator = document.querySelector('.recording-indicator');
+
+        let recognition = null;
+        let isRecording = false;
+
+        // Check if browser supports speech recognition
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isRecording = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                recordingIndicator.classList.add('active');
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                recordingIndicator.classList.remove('active');
+            };
+
+            recognition.onresult = (event) => {
+                let finalTranscript = '';
+                let interimTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+
+                result.value = finalTranscript + interimTranscript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                alert('An error occurred with speech recognition. Please try again.');
+                stopRecording();
+            };
+        } else {
+            alert('Speech recognition is not supported in your browser. Please try a different browser.');
+            startButton.disabled = true;
+        }
+
+        function startRecording() {
+            if (recognition) {
+                recognition.start();
+            }
+        }
+
+        function stopRecording() {
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+
+        startButton.addEventListener('click', startRecording);
+        stopButton.addEventListener('click', stopRecording);
+
+        clearButton.addEventListener('click', () => {
+            result.value = '';
+        });
+
+        copyButton.addEventListener('click', () => {
+            result.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const originalText = copyButton.innerHTML;
+            copyButton.innerHTML = '<i class="bi bi-check"></i> Copied!';
+            setTimeout(() => {
+                copyButton.innerHTML = originalText;
+            }, 2000);
+        });
+    </script>
+</body>
+</html> 

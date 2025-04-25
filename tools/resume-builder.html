@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Builder - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .resume-preview {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            min-height: 800px;
+        }
+        .template-preview {
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .template-preview:hover {
+            border-color: #0d6efd;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .template-preview.selected {
+            border-color: #0d6efd;
+            box-shadow: 0 0 15px rgba(13, 110, 253, 0.3);
+        }
+        .template-preview img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+            border: 1px solid #dee2e6;
+        }
+        .template-preview:hover img {
+            transform: scale(1.05);
+        }
+        .template-preview p {
+            margin: 0;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        .template-1 .resume-header {
+            background: linear-gradient(135deg, #0d6efd, #0a58ca);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .template-1 .resume-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .template-1 .resume-section h3 {
+            color: #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .template-2 .resume-header {
+            background: linear-gradient(45deg, #6f42c1, #d63384);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .template-2 .resume-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #6f42c1;
+        }
+        .template-3 .resume-header {
+            text-align: center;
+            padding: 2rem;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+        .template-3 .resume-section {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .template-4 .resume-header {
+            background: #f8f9fa;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        .template-4 .resume-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0d6efd, #6f42c1);
+        }
+        .template-5 .resume-header {
+            background: #212529;
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .template-5 .resume-section {
+            background: #2c3034;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .template-6 .resume-header {
+            background: linear-gradient(45deg, #fd7e14, #ffc107);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .template-6 .resume-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #ffc107;
+        }
+        .section-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .section-item:hover {
+            background-color: #e9ecef;
+        }
+        .section-item.selected {
+            background-color: #e7f1ff;
+            border-left: 4px solid #0d6efd;
+        }
+        .form-section {
+            display: none;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .resume-header {
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .resume-section {
+            margin-bottom: 1.5rem;
+        }
+        .resume-section h3 {
+            color: #0d6efd;
+            margin-bottom: 0.5rem;
+        }
+        .experience-item, .education-item {
+            margin-bottom: 1rem;
+        }
+        .skill-tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin: 0.25rem;
+            font-size: 0.9rem;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        .skill-tag:hover {
+            background-color: #dee2e6;
+        }
+        .skill-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        .skill-input input {
+            flex: 1;
+        }
+        .skill-input .remove-item-btn {
+            padding: 0.25rem 0.5rem;
+        }
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 3px solid #0d6efd;
+        }
+        .color-picker {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #dee2e6;
+        }
+        .color-option.selected {
+            border-color: #0d6efd;
+        }
+        .font-picker {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .font-option {
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .font-option.selected {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+        .add-item-btn {
+            margin-top: 1rem;
+        }
+        .remove-item-btn {
+            color: #dc3545;
+            cursor: pointer;
+        }
+        .template-customization {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">Resume Builder</h2>
+            <p class="text-center text-muted mb-4">Create a professional resume with customizable templates</p>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-4">
+                        <h4>Templates</h4>
+                        <div class="row g-3">
+                            <div class="col-6 col-md-4">
+                                <div class="template-preview selected" data-template="template-1">
+                                    <img src="https://via.placeholder.com/300x180/0d6efd/ffffff?text=Modern+Professional" alt="Modern Professional Template">
+                                    <p>Modern Professional</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="template-preview" data-template="template-2">
+                                    <img src="https://via.placeholder.com/300x180/6f42c1/ffffff?text=Creative" alt="Creative Template">
+                                    <p>Creative</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="template-preview" data-template="template-3">
+                                    <img src="https://via.placeholder.com/300x180/6c757d/ffffff?text=Minimal" alt="Minimal Template">
+                                    <p>Minimal</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="template-preview" data-template="template-4">
+                                    <img src="https://via.placeholder.com/300x180/0d6efd/ffffff?text=Elegant" alt="Elegant Template">
+                                    <p>Elegant</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="template-preview" data-template="template-5">
+                                    <img src="https://via.placeholder.com/300x180/212529/ffffff?text=Modern+Dark" alt="Modern Dark Template">
+                                    <p>Modern Dark</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-4">
+                                <div class="template-preview" data-template="template-6">
+                                    <img src="https://via.placeholder.com/300x180/fd7e14/ffffff?text=Colorful" alt="Colorful Template">
+                                    <p>Colorful</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4>Sections</h4>
+                        <div class="section-item selected" data-section="personal">
+                            <i class="bi bi-person"></i> Personal Information
+                        </div>
+                        <div class="section-item" data-section="summary">
+                            <i class="bi bi-file-text"></i> Professional Summary
+                        </div>
+                        <div class="section-item" data-section="experience">
+                            <i class="bi bi-briefcase"></i> Work Experience
+                        </div>
+                        <div class="section-item" data-section="education">
+                            <i class="bi bi-mortarboard"></i> Education
+                        </div>
+                        <div class="section-item" data-section="skills">
+                            <i class="bi bi-tools"></i> Skills
+                        </div>
+                        <div class="section-item" data-section="projects">
+                            <i class="bi bi-folder"></i> Projects
+                        </div>
+                        <div class="section-item" data-section="languages">
+                            <i class="bi bi-translate"></i> Languages
+                        </div>
+                    </div>
+
+                    <!-- Form Sections -->
+                    <div class="form-section active" id="personalForm">
+                        <h5>Personal Information</h5>
+                        <div class="mb-3 text-center">
+                            <img src="https://via.placeholder.com/150" class="profile-image" id="profileImage" alt="Profile">
+                            <input type="file" class="form-control" id="imageUpload" accept="image/*">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="nameInput">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Professional Title</label>
+                            <input type="text" class="form-control" id="titleInput">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="emailInput">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phoneInput">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" id="locationInput">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Website/LinkedIn</label>
+                            <input type="url" class="form-control" id="websiteInput">
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="summaryForm">
+                        <h5>Professional Summary</h5>
+                        <div class="mb-3">
+                            <textarea class="form-control" id="summaryInput" rows="5"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="experienceForm">
+                        <h5>Work Experience</h5>
+                        <div id="experienceItems">
+                            <div class="experience-item-form mb-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Job Title</label>
+                                    <input type="text" class="form-control" name="expTitle">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Company</label>
+                                    <input type="text" class="form-control" name="expCompany">
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label">Start Date</label>
+                                        <input type="month" class="form-control" name="expStartDate">
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">End Date</label>
+                                        <input type="month" class="form-control" name="expEndDate">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="expDescription" rows="3"></textarea>
+                                </div>
+                                <button class="btn btn-danger btn-sm remove-item-btn">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary add-item-btn" id="addExperience">
+                            <i class="bi bi-plus"></i> Add Experience
+                        </button>
+                    </div>
+
+                    <div class="form-section" id="educationForm">
+                        <h5>Education</h5>
+                        <div id="educationItems">
+                            <div class="education-item-form mb-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Degree</label>
+                                    <input type="text" class="form-control" name="eduDegree">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">School</label>
+                                    <input type="text" class="form-control" name="eduSchool">
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col">
+                                        <label class="form-label">Start Date</label>
+                                        <input type="month" class="form-control" name="eduStartDate">
+                                    </div>
+                                    <div class="col">
+                                        <label class="form-label">End Date</label>
+                                        <input type="month" class="form-control" name="eduEndDate">
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger btn-sm remove-item-btn">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary add-item-btn" id="addEducation">
+                            <i class="bi bi-plus"></i> Add Education
+                        </button>
+                    </div>
+
+                    <div class="form-section" id="skillsForm">
+                        <h5>Skills</h5>
+                        <div id="skillsItems">
+                            <div class="skill-input">
+                                <input type="text" class="form-control" name="skillName" placeholder="Enter skill">
+                                <button class="btn btn-danger btn-sm remove-item-btn">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary add-item-btn" id="addSkill">
+                            <i class="bi bi-plus"></i> Add Skill
+                        </button>
+                    </div>
+
+                    <div class="form-section" id="projectsForm">
+                        <h5>Projects</h5>
+                        <div id="projectsItems">
+                            <div class="project-item-form mb-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Project Name</label>
+                                    <input type="text" class="form-control" name="projectName">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Project URL</label>
+                                    <input type="url" class="form-control" name="projectUrl">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="projectDescription" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Technologies Used</label>
+                                    <input type="text" class="form-control" name="projectTech" placeholder="Comma separated list of technologies">
+                                </div>
+                                <button class="btn btn-danger btn-sm remove-item-btn">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary add-item-btn" id="addProject">
+                            <i class="bi bi-plus"></i> Add Project
+                        </button>
+                    </div>
+
+                    <div class="form-section" id="languagesForm">
+                        <h5>Languages</h5>
+                        <div id="languagesItems">
+                            <div class="language-item-form mb-3">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Language</label>
+                                            <input type="text" class="form-control" name="languageName">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Proficiency</label>
+                                            <select class="form-select" name="languageProficiency">
+                                                <option value="Native">Native</option>
+                                                <option value="Fluent">Fluent</option>
+                                                <option value="Advanced">Advanced</option>
+                                                <option value="Intermediate">Intermediate</option>
+                                                <option value="Basic">Basic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger btn-sm remove-item-btn">
+                                    <i class="bi bi-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary add-item-btn" id="addLanguage">
+                            <i class="bi bi-plus"></i> Add Language
+                        </button>
+                    </div>
+
+                    <div class="template-customization">
+                        <h5>Customize Template</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Color Scheme</label>
+                            <div class="color-picker">
+                                <div class="color-option selected" style="background-color: #0d6efd;" data-color="#0d6efd"></div>
+                                <div class="color-option" style="background-color: #198754;" data-color="#198754"></div>
+                                <div class="color-option" style="background-color: #6f42c1;" data-color="#6f42c1"></div>
+                                <div class="color-option" style="background-color: #dc3545;" data-color="#dc3545"></div>
+                                <div class="color-option" style="background-color: #fd7e14;" data-color="#fd7e14"></div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Font Family</label>
+                            <div class="font-picker">
+                                <div class="font-option selected" data-font="Arial">Arial</div>
+                                <div class="font-option" data-font="Times New Roman">Times</div>
+                                <div class="font-option" data-font="Helvetica">Helvetica</div>
+                                <div class="font-option" data-font="Georgia">Georgia</div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Font Size</label>
+                            <input type="range" class="form-range" id="fontSize" min="12" max="24" value="16">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="resume-preview" id="resumePreview">
+                        <div class="resume-header">
+                            <h1 id="previewName">Your Name</h1>
+                            <p id="previewTitle">Professional Title</p>
+                            <p id="previewContact">Email | Phone | Location</p>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Professional Summary</h3>
+                            <p id="previewSummary">Your professional summary goes here...</p>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Work Experience</h3>
+                            <div id="previewExperience">
+                                <!-- Experience items will be added here -->
+                            </div>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Education</h3>
+                            <div id="previewEducation">
+                                <!-- Education items will be added here -->
+                            </div>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Skills</h3>
+                            <div id="previewSkills">
+                                <!-- Skills will be added here -->
+                            </div>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Projects</h3>
+                            <div id="previewProjects">
+                                <!-- Project items will be added here -->
+                            </div>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Languages</h3>
+                            <div id="previewLanguages">
+                                <!-- Language items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 text-center">
+                        <button class="btn btn-primary" id="downloadPDF">
+                            <i class="bi bi-download"></i> Download PDF
+                        </button>
+                        <button class="btn btn-success" id="downloadDOCX">
+                            <i class="bi bi-download"></i> Download DOCX
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Template selection
+        document.querySelectorAll('.template-preview').forEach(template => {
+            template.addEventListener('click', function() {
+                // Remove selected class from all templates
+                document.querySelectorAll('.template-preview').forEach(t => t.classList.remove('selected'));
+                // Add selected class to clicked template
+                this.classList.add('selected');
+                
+                // Get the template class
+                const templateClass = this.getAttribute('data-template');
+                
+                // Remove all template classes from resume preview
+                document.getElementById('resumePreview').classList.remove(
+                    'template-1', 'template-2', 'template-3', 'template-4', 'template-5', 'template-6'
+                );
+                
+                // Add the selected template class
+                document.getElementById('resumePreview').classList.add(templateClass);
+                
+                // Update colors based on template
+                updateTemplateColors(templateClass);
+            });
+        });
+
+        function updateTemplateColors(templateClass) {
+            const colorMap = {
+                'template-1': '#0d6efd',
+                'template-2': '#6f42c1',
+                'template-3': '#6c757d',
+                'template-4': '#0d6efd',
+                'template-5': '#0d6efd',
+                'template-6': '#fd7e14'
+            };
+            
+            const color = colorMap[templateClass];
+            
+            // Update all elements that should change color
+            document.querySelectorAll('.resume-section h3, .skill-tag').forEach(element => {
+                element.style.color = color;
+            });
+            
+            document.querySelectorAll('.skill-tag').forEach(element => {
+                element.style.borderColor = color;
+            });
+        }
+
+        // Initialize with first template
+        document.querySelector('.template-preview[data-template="template-1"]').click();
+
+        // Section selection
+        document.querySelectorAll('.section-item').forEach(section => {
+            section.addEventListener('click', function() {
+                // Remove selected class from all sections
+                document.querySelectorAll('.section-item').forEach(s => s.classList.remove('selected'));
+                // Add selected class to clicked section
+                this.classList.add('selected');
+                
+                // Hide all form sections
+                document.querySelectorAll('.form-section').forEach(form => {
+                    form.classList.remove('active');
+                });
+                
+                // Show the corresponding form section
+                const sectionId = this.getAttribute('data-section');
+                const formId = sectionId + 'Form';
+                document.getElementById(formId).classList.add('active');
+            });
+        });
+
+        // Initialize with personal section active
+        document.querySelector('.section-item[data-section="personal"]').click();
+
+        // Download buttons
+        document.getElementById('downloadPDF').addEventListener('click', () => {
+            // In a real implementation, you would generate and download a PDF
+            alert('PDF download functionality would be implemented here');
+        });
+
+        document.getElementById('downloadDOCX').addEventListener('click', () => {
+            // In a real implementation, you would generate and download a DOCX
+            alert('DOCX download functionality would be implemented here');
+        });
+
+        // Image upload
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Form input handling
+        const formInputs = {
+            personal: ['nameInput', 'titleInput', 'emailInput', 'phoneInput', 'locationInput', 'websiteInput'],
+            summary: ['summaryInput'],
+            experience: ['expTitle', 'expCompany', 'expStartDate', 'expEndDate', 'expDescription'],
+            education: ['eduDegree', 'eduSchool', 'eduStartDate', 'eduEndDate'],
+            skills: ['skillName']
+        };
+
+        // Add experience item
+        document.getElementById('addExperience').addEventListener('click', function() {
+            const template = document.querySelector('.experience-item-form').cloneNode(true);
+            template.querySelectorAll('input, textarea').forEach(input => input.value = '');
+            document.getElementById('experienceItems').appendChild(template);
+        });
+
+        // Add education item
+        document.getElementById('addEducation').addEventListener('click', function() {
+            const template = document.querySelector('.education-item-form').cloneNode(true);
+            template.querySelectorAll('input').forEach(input => input.value = '');
+            document.getElementById('educationItems').appendChild(template);
+        });
+
+        // Skills functionality
+        document.getElementById('addSkill').addEventListener('click', function() {
+            const template = document.querySelector('.skill-input').cloneNode(true);
+            template.querySelector('input').value = '';
+            document.getElementById('skillsItems').appendChild(template);
+        });
+
+        // Add project item
+        document.getElementById('addProject').addEventListener('click', function() {
+            const template = document.querySelector('.project-item-form').cloneNode(true);
+            template.querySelectorAll('input, textarea').forEach(input => input.value = '');
+            document.getElementById('projectsItems').appendChild(template);
+        });
+
+        // Add language item
+        document.getElementById('addLanguage').addEventListener('click', function() {
+            const template = document.querySelector('.language-item-form').cloneNode(true);
+            template.querySelectorAll('input, select').forEach(input => {
+                if (input.tagName === 'SELECT') {
+                    input.selectedIndex = 0;
+                } else {
+                    input.value = '';
+                }
+            });
+            document.getElementById('languagesItems').appendChild(template);
+        });
+
+        // Remove items
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-item-btn')) {
+                e.target.closest('.experience-item-form, .education-item-form, .skill-input, .project-item-form, .language-item-form').remove();
+            }
+        });
+
+        // Color picker
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                // Update resume preview with selected color
+            });
+        });
+
+        // Font picker
+        document.querySelectorAll('.font-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.font-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                // Update resume preview with selected font
+            });
+        });
+
+        // Font size
+        document.getElementById('fontSize').addEventListener('input', function() {
+            // Update resume preview with selected font size
+        });
+
+        // Real-time preview updates
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                const section = this.closest('.form-section').id.replace('Form', '');
+                updatePreview(section);
+            });
+        });
+
+        // Update preview function
+        function updatePreview(section) {
+            switch(section) {
+                case 'personal':
+                    document.getElementById('previewName').textContent = document.getElementById('nameInput').value;
+                    document.getElementById('previewTitle').textContent = document.getElementById('titleInput').value;
+                    document.getElementById('previewContact').textContent = 
+                        `${document.getElementById('emailInput').value} | ${document.getElementById('phoneInput').value} | ${document.getElementById('locationInput').value}`;
+                    break;
+                case 'summary':
+                    document.getElementById('previewSummary').textContent = document.getElementById('summaryInput').value;
+                    break;
+                case 'experience':
+                    const experienceContainer = document.getElementById('previewExperience');
+                    experienceContainer.innerHTML = '';
+                    document.querySelectorAll('.experience-item').forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'experience-item';
+                        div.innerHTML = `
+                            <h4>${item.querySelector('[name="expTitle"]').value}</h4>
+                            <p><strong>${item.querySelector('[name="expCompany"]').value}</strong> | ${item.querySelector('[name="expStartDate"]').value} - ${item.querySelector('[name="expEndDate"]').value}</p>
+                            <p>${item.querySelector('[name="expDescription"]').value}</p>
+                        `;
+                        experienceContainer.appendChild(div);
+                    });
+                    break;
+                case 'education':
+                    const educationContainer = document.getElementById('previewEducation');
+                    educationContainer.innerHTML = '';
+                    document.querySelectorAll('.education-item').forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'education-item';
+                        div.innerHTML = `
+                            <h4>${item.querySelector('[name="eduDegree"]').value}</h4>
+                            <p><strong>${item.querySelector('[name="eduSchool"]').value}</strong> | ${item.querySelector('[name="eduStartDate"]').value} - ${item.querySelector('[name="eduEndDate"]').value}</p>
+                        `;
+                        educationContainer.appendChild(div);
+                    });
+                    break;
+                case 'skills':
+                    const skillsContainer = document.getElementById('previewSkills');
+                    skillsContainer.innerHTML = '';
+                    document.querySelectorAll('.skill-input input').forEach(input => {
+                        if (input.value.trim() !== '') {
+                            const span = document.createElement('span');
+                            span.className = 'skill-tag';
+                            span.textContent = input.value.trim();
+                            skillsContainer.appendChild(span);
+                        }
+                    });
+                    break;
+                case 'projects':
+                    const projectsContainer = document.getElementById('previewProjects');
+                    projectsContainer.innerHTML = '';
+                    document.querySelectorAll('.project-item-form').forEach(project => {
+                        const div = document.createElement('div');
+                        div.className = 'project-item';
+                        div.innerHTML = `
+                            <h4>${project.querySelector('[name="projectName"]').value}</h4>
+                            <p><a href="${project.querySelector('[name="projectUrl"]').value}" target="_blank">Project Link</a></p>
+                            <p>${project.querySelector('[name="projectDescription"]').value}</p>
+                            <p><strong>Technologies:</strong> ${project.querySelector('[name="projectTech"]').value}</p>
+                        `;
+                        projectsContainer.appendChild(div);
+                    });
+                    break;
+                case 'languages':
+                    const languagesContainer = document.getElementById('previewLanguages');
+                    languagesContainer.innerHTML = '';
+                    document.querySelectorAll('.language-item-form').forEach(language => {
+                        const div = document.createElement('div');
+                        div.className = 'language-item';
+                        div.innerHTML = `
+                            <p><strong>${language.querySelector('[name="languageName"]').value}</strong> - 
+                            ${language.querySelector('[name="languageProficiency"]').value}</p>
+                        `;
+                        languagesContainer.appendChild(div);
+                    });
+                    break;
+            }
+        }
+
+        // Real-time preview updates for skills
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('.skill-input input')) {
+                updatePreview('skills');
+            }
+        });
+
+        // Remove skill item
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-item-btn')) {
+                const skillInput = e.target.closest('.skill-input');
+                if (document.querySelectorAll('.skill-input').length > 1) {
+                    skillInput.remove();
+                    updatePreview('skills');
+                } else {
+                    skillInput.querySelector('input').value = '';
+                    updatePreview('skills');
+                }
+            }
+        });
+
+        // Initialize skills preview
+        updatePreview('skills');
+
+        // Sample data for preview
+        const sampleData = {
+            name: 'John Doe',
+            title: 'Senior Software Engineer',
+            contact: 'john.doe@email.com | (123) 456-7890 | New York, NY',
+            summary: 'Experienced software engineer with a passion for creating efficient and scalable solutions. Specialized in web development and cloud technologies.',
+            experience: [
+                {
+                    title: 'Senior Software Engineer',
+                    company: 'Tech Corp',
+                    period: '2020 - Present',
+                    description: 'Led development of enterprise applications using modern web technologies.'
+                },
+                {
+                    title: 'Software Engineer',
+                    company: 'Innovate Solutions',
+                    period: '2018 - 2020',
+                    description: 'Developed and maintained web applications using React and Node.js.'
+                }
+            ],
+            education: [
+                {
+                    degree: 'Master of Science in Computer Science',
+                    school: 'University of Technology',
+                    period: '2016 - 2018'
+                },
+                {
+                    degree: 'Bachelor of Science in Computer Science',
+                    school: 'State University',
+                    period: '2012 - 2016'
+                }
+            ],
+            skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS', 'Docker', 'Git']
+        };
+
+        // Update preview with sample data
+        document.getElementById('previewName').textContent = sampleData.name;
+        document.getElementById('previewTitle').textContent = sampleData.title;
+        document.getElementById('previewContact').textContent = sampleData.contact;
+        document.getElementById('previewSummary').textContent = sampleData.summary;
+
+        // Add experience items
+        const experienceContainer = document.getElementById('previewExperience');
+        sampleData.experience.forEach(exp => {
+            const div = document.createElement('div');
+            div.className = 'experience-item';
+            div.innerHTML = `
+                <h4>${exp.title}</h4>
+                <p><strong>${exp.company}</strong> | ${exp.period}</p>
+                <p>${exp.description}</p>
+            `;
+            experienceContainer.appendChild(div);
+        });
+
+        // Add education items
+        const educationContainer = document.getElementById('previewEducation');
+        sampleData.education.forEach(edu => {
+            const div = document.createElement('div');
+            div.className = 'education-item';
+            div.innerHTML = `
+                <h4>${edu.degree}</h4>
+                <p><strong>${edu.school}</strong> | ${edu.period}</p>
+            `;
+            educationContainer.appendChild(div);
+        });
+
+        // Add skills
+        const skillsContainer = document.getElementById('previewSkills');
+        sampleData.skills.forEach(skill => {
+            const span = document.createElement('span');
+            span.className = 'skill-tag';
+            span.textContent = skill;
+            skillsContainer.appendChild(span);
+        });
+    </script>
+</body>
+</html> 

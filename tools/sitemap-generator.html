@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitemap Generator - Multi-Tools</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <style>
+        .sitemap-output {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .url-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .url-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .url-item:last-child {
+            border-bottom: none;
+        }
+        .url-item .form-control {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-container"></div>
+
+    <main class="container my-4">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>Sitemap Generator</h1>
+                <p class="lead">Generate XML sitemaps for your website</p>
+            </div>
+
+            <div class="tool-content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <form id="sitemapForm">
+                            <div class="mb-3">
+                                <label for="baseUrl" class="form-label">Base URL</label>
+                                <input type="url" class="form-control" id="baseUrl" required 
+                                       placeholder="https://example.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="changeFreq" class="form-label">Default Change Frequency</label>
+                                <select class="form-select" id="changeFreq">
+                                    <option value="always">Always</option>
+                                    <option value="hourly">Hourly</option>
+                                    <option value="daily" selected>Daily</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="yearly">Yearly</option>
+                                    <option value="never">Never</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="priority" class="form-label">Default Priority</label>
+                                <select class="form-select" id="priority">
+                                    <option value="1.0">1.0</option>
+                                    <option value="0.9">0.9</option>
+                                    <option value="0.8">0.8</option>
+                                    <option value="0.7">0.7</option>
+                                    <option value="0.6">0.6</option>
+                                    <option value="0.5" selected>0.5</option>
+                                    <option value="0.4">0.4</option>
+                                    <option value="0.3">0.3</option>
+                                    <option value="0.2">0.2</option>
+                                    <option value="0.1">0.1</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">URLs</label>
+                                <div class="url-list" id="urlList">
+                                    <!-- URL items will be added here -->
+                                </div>
+                                <button type="button" class="btn btn-outline-primary" id="addUrlBtn">
+                                    <i class="fas fa-plus"></i> Add URL
+                                </button>
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary w-100">Generate Sitemap</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="position-relative">
+                            <button id="copyBtn" class="btn btn-outline-secondary copy-btn">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                            <div class="sitemap-output" id="sitemapOutput">
+                                <!-- Sitemap XML will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-container"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="../js/main.js"></script>
+    <!-- Tool specific JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sitemapForm = document.getElementById('sitemapForm');
+            const urlList = document.getElementById('urlList');
+            const addUrlBtn = document.getElementById('addUrlBtn');
+            const sitemapOutput = document.getElementById('sitemapOutput');
+            const copyBtn = document.getElementById('copyBtn');
+            const baseUrl = document.getElementById('baseUrl');
+
+            function createUrlItem() {
+                const urlItem = document.createElement('div');
+                urlItem.className = 'url-item';
+                
+                const urlInput = document.createElement('input');
+                urlInput.type = 'text';
+                urlInput.className = 'form-control';
+                urlInput.placeholder = 'Enter URL path (e.g., /about)';
+                
+                const changeFreqSelect = document.createElement('select');
+                changeFreqSelect.className = 'form-select';
+                changeFreqSelect.innerHTML = `
+                    <option value="always">Always</option>
+                    <option value="hourly">Hourly</option>
+                    <option value="daily" selected>Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="never">Never</option>
+                `;
+                
+                const prioritySelect = document.createElement('select');
+                prioritySelect.className = 'form-select';
+                prioritySelect.innerHTML = `
+                    <option value="1.0">1.0</option>
+                    <option value="0.9">0.9</option>
+                    <option value="0.8">0.8</option>
+                    <option value="0.7">0.7</option>
+                    <option value="0.6">0.6</option>
+                    <option value="0.5" selected>0.5</option>
+                    <option value="0.4">0.4</option>
+                    <option value="0.3">0.3</option>
+                    <option value="0.2">0.2</option>
+                    <option value="0.1">0.1</option>
+                `;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-outline-danger';
+                removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                removeBtn.onclick = function() {
+                    urlItem.remove();
+                };
+                
+                urlItem.appendChild(urlInput);
+                urlItem.appendChild(changeFreqSelect);
+                urlItem.appendChild(prioritySelect);
+                urlItem.appendChild(removeBtn);
+                
+                return urlItem;
+            }
+
+            addUrlBtn.addEventListener('click', function() {
+                urlList.appendChild(createUrlItem());
+            });
+
+            function generateSitemap() {
+                const baseUrlValue = baseUrl.value;
+                if (!baseUrlValue) return;
+                
+                const defaultChangeFreq = document.getElementById('changeFreq').value;
+                const defaultPriority = document.getElementById('priority').value;
+                
+                let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+                xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+                
+                // Add homepage
+                xml += `  <url>\n`;
+                xml += `    <loc>${baseUrlValue}</loc>\n`;
+                xml += `    <changefreq>${defaultChangeFreq}</changefreq>\n`;
+                xml += `    <priority>${defaultPriority}</priority>\n`;
+                xml += `  </url>\n`;
+                
+                // Add other URLs
+                const urlItems = urlList.getElementsByClassName('url-item');
+                for (let item of urlItems) {
+                    const urlInput = item.querySelector('input');
+                    const changeFreqSelect = item.querySelector('select:first-of-type');
+                    const prioritySelect = item.querySelector('select:last-of-type');
+                    
+                    if (urlInput.value) {
+                        const url = urlInput.value.startsWith('/') ? urlInput.value : `/${urlInput.value}`;
+                        xml += `  <url>\n`;
+                        xml += `    <loc>${baseUrlValue}${url}</loc>\n`;
+                        xml += `    <changefreq>${changeFreqSelect.value}</changefreq>\n`;
+                        xml += `    <priority>${prioritySelect.value}</priority>\n`;
+                        xml += `  </url>\n`;
+                    }
+                }
+                
+                xml += `</urlset>`;
+                return xml;
+            }
+
+            sitemapForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                sitemapOutput.textContent = generateSitemap();
+            });
+
+            copyBtn.addEventListener('click', function() {
+                const text = sitemapOutput.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+
+            // Add initial URL input
+            addUrlBtn.click();
+        });
+    </script>
+</body>
+</html> 

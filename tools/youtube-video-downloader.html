@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .video-preview {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+        .format-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .format-option {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .format-option:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd;
+        }
+        .format-option.selected {
+            background-color: #e7f1ff;
+            border-color: #0d6efd;
+        }
+        .loading-spinner {
+            display: none;
+            margin: 1rem 0;
+        }
+        .error-message {
+            color: #dc3545;
+            display: none;
+            margin-top: 1rem;
+        }
+        .video-info {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        .video-info p {
+            margin-bottom: 0.5rem;
+        }
+        .video-info .title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .video-info .details {
+            color: #6c757d;
+        }
+        .format-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        .format-details p {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">YouTube Video Downloader</h2>
+            <p class="text-center text-muted mb-4">Download YouTube videos in your preferred quality and format</p>
+            
+            <div class="mb-3">
+                <label for="videoUrl" class="form-label">YouTube Video URL:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="videoUrl" placeholder="Enter YouTube video URL">
+                    <button class="btn btn-primary" id="fetchButton">Fetch Video</button>
+                </div>
+            </div>
+
+            <div class="loading-spinner text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Fetching video information...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Please enter a valid YouTube URL
+            </div>
+
+            <div class="video-info" id="videoInfo">
+                <p class="title" id="videoTitle">Video Title</p>
+                <p class="details" id="videoDetails">Duration: 00:00 • Views: 0</p>
+            </div>
+
+            <div id="videoContainer" style="display: none;">
+                <h5 class="mb-3">Available Formats</h5>
+                <div class="format-options" id="formatOptions">
+                    <div class="format-option" data-format="mp4" data-quality="1080p">
+                        <h6>MP4 1080p</h6>
+                        <p class="text-muted">1920x1080</p>
+                    </div>
+                    <div class="format-option" data-format="mp4" data-quality="720p">
+                        <h6>MP4 720p</h6>
+                        <p class="text-muted">1280x720</p>
+                    </div>
+                    <div class="format-option" data-format="mp4" data-quality="480p">
+                        <h6>MP4 480p</h6>
+                        <p class="text-muted">854x480</p>
+                    </div>
+                    <div class="format-option" data-format="mp3" data-quality="high">
+                        <h6>MP3 High</h6>
+                        <p class="text-muted">320kbps</p>
+                    </div>
+                </div>
+
+                <div class="format-details" id="formatDetails">
+                    <p><strong>Format:</strong> <span id="selectedFormat">MP4</span></p>
+                    <p><strong>Quality:</strong> <span id="selectedQuality">1080p</span></p>
+                    <p><strong>Size:</strong> <span id="fileSize">0 MB</span></p>
+                </div>
+
+                <video id="videoPreview" class="video-preview" controls>
+                    Your browser does not support the video tag.
+                </video>
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-success" id="downloadButton">
+                        <i class="bi bi-download"></i> Download Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videoUrl = document.getElementById('videoUrl');
+        const fetchButton = document.getElementById('fetchButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoContainer = document.getElementById('videoContainer');
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const formatOptions = document.querySelectorAll('.format-option');
+        const videoInfo = document.getElementById('videoInfo');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoDetails = document.getElementById('videoDetails');
+        const formatDetails = document.getElementById('formatDetails');
+        const selectedFormat = document.getElementById('selectedFormat');
+        const selectedQuality = document.getElementById('selectedQuality');
+        const fileSize = document.getElementById('fileSize');
+
+        let currentVideoId = '';
+        let selectedFormatType = 'mp4';
+        let selectedQualityLevel = '1080p';
+        let videoData = null;
+
+        function extractVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function formatDuration(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function formatFileSize(bytes) {
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            if (bytes === 0) return '0 Byte';
+            const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+            return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+        }
+
+        function showVideoInfo(data) {
+            videoTitle.textContent = data.title || 'Untitled Video';
+            videoDetails.textContent = `Duration: ${formatDuration(data.duration)} • Views: ${data.views.toLocaleString()}`;
+            videoInfo.style.display = 'block';
+        }
+
+        function updateFormatDetails() {
+            selectedFormat.textContent = selectedFormatType.toUpperCase();
+            selectedQuality.textContent = selectedQualityLevel;
+            
+            // Simulate file size calculation
+            const sizeMap = {
+                '1080p': 150 * 1024 * 1024, // 150MB
+                '720p': 80 * 1024 * 1024,   // 80MB
+                '480p': 40 * 1024 * 1024,   // 40MB
+                'high': 10 * 1024 * 1024    // 10MB
+            };
+            
+            fileSize.textContent = formatFileSize(sizeMap[selectedQualityLevel]);
+            formatDetails.style.display = 'block';
+        }
+
+        function showVideo(videoId) {
+            // In a real implementation, you would fetch the actual video URL from YouTube's API
+            const videoUrl = `https://www.youtube.com/embed/${videoId}`;
+            videoPreview.src = videoUrl;
+            videoPreview.style.display = 'block';
+            videoContainer.style.display = 'block';
+            updateFormatDetails();
+        }
+
+        function validateUrl(url) {
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                errorMessage.style.display = 'block';
+                videoContainer.style.display = 'none';
+                videoInfo.style.display = 'none';
+                return null;
+            }
+            errorMessage.style.display = 'none';
+            return videoId;
+        }
+
+        fetchButton.addEventListener('click', () => {
+            const videoId = validateUrl(videoUrl.value);
+            if (!videoId) return;
+
+            loadingSpinner.style.display = 'block';
+            videoContainer.style.display = 'none';
+            videoInfo.style.display = 'none';
+
+            // Simulate API call to fetch video information
+            setTimeout(() => {
+                currentVideoId = videoId;
+                videoData = {
+                    id: videoId,
+                    title: 'Sample YouTube Video',
+                    duration: 300, // 5 minutes
+                    views: 1000000,
+                    formats: ['mp4', 'mp3'],
+                    qualities: ['1080p', '720p', '480p', 'high']
+                };
+                
+                showVideoInfo(videoData);
+                showVideo(videoId);
+                loadingSpinner.style.display = 'none';
+            }, 1500);
+        });
+
+        formatOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                formatOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedFormatType = option.dataset.format;
+                selectedQualityLevel = option.dataset.quality;
+                updateFormatDetails();
+            });
+        });
+
+        downloadButton.addEventListener('click', () => {
+            if (!currentVideoId) return;
+
+            // In a real implementation, you would use the actual video URL
+            const fileName = `youtube_video_${currentVideoId}_${selectedQualityLevel}.${selectedFormatType}`;
+            const link = document.createElement('a');
+            link.href = `https://example.com/videos/${currentVideoId}/${selectedFormatType}/${selectedQualityLevel}`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Select 1080p MP4 by default
+        formatOptions[0].classList.add('selected');
+    </script>
+</body>
+</html> 

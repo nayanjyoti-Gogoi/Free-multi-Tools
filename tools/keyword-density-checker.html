@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyword Density Checker - Multi-Tools</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+    <style>
+        .keyword-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .keyword-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .keyword-item:last-child {
+            border-bottom: none;
+        }
+        .progress {
+            height: 20px;
+        }
+        .text-stats {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-container"></div>
+
+    <main class="container my-4">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>Keyword Density Checker</h1>
+                <p class="lead">Analyze keyword density in your text</p>
+            </div>
+
+            <div class="tool-content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="textInput" class="form-label">Enter your text</label>
+                            <textarea class="form-control" id="textInput" rows="10" placeholder="Paste your text here..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="minWordLength" class="form-label">Minimum Word Length</label>
+                            <input type="number" class="form-control" id="minWordLength" value="3" min="1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="excludeWords" class="form-label">Words to Exclude (comma-separated)</label>
+                            <input type="text" class="form-control" id="excludeWords" placeholder="the, and, or, but, etc.">
+                        </div>
+                        <div class="mb-3">
+                            <button id="analyzeBtn" class="btn btn-primary w-100">Analyze Text</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-stats">
+                            <h5>Text Statistics</h5>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p>Total Words: <span id="totalWords">0</span></p>
+                                    <p>Unique Words: <span id="uniqueWords">0</span></p>
+                                </div>
+                                <div class="col-6">
+                                    <p>Characters: <span id="totalChars">0</span></p>
+                                    <p>Sentences: <span id="totalSentences">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="keyword-list" id="keywordList">
+                            <!-- Keyword density results will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-container"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="../js/main.js"></script>
+    <!-- Tool specific JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textInput = document.getElementById('textInput');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const keywordList = document.getElementById('keywordList');
+            const minWordLength = document.getElementById('minWordLength');
+            const excludeWords = document.getElementById('excludeWords');
+            const totalWords = document.getElementById('totalWords');
+            const uniqueWords = document.getElementById('uniqueWords');
+            const totalChars = document.getElementById('totalChars');
+            const totalSentences = document.getElementById('totalSentences');
+
+            function cleanText(text) {
+                return text.toLowerCase()
+                    .replace(/[^\w\s]/g, '') // Remove punctuation
+                    .replace(/\s+/g, ' ') // Normalize whitespace
+                    .trim();
+            }
+
+            function getWordFrequency(text) {
+                const words = text.split(' ');
+                const frequency = {};
+                
+                words.forEach(word => {
+                    if (word.length >= minWordLength.value) {
+                        frequency[word] = (frequency[word] || 0) + 1;
+                    }
+                });
+                
+                return frequency;
+            }
+
+            function analyzeText() {
+                const text = textInput.value;
+                const cleanedText = cleanText(text);
+                const words = cleanedText.split(' ');
+                const excludeList = excludeWords.value.split(',').map(word => word.trim().toLowerCase());
+                
+                // Update basic statistics
+                totalWords.textContent = words.length;
+                totalChars.textContent = text.length;
+                totalSentences.textContent = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+                
+                // Calculate word frequency
+                const frequency = getWordFrequency(cleanedText);
+                const uniqueWordsCount = Object.keys(frequency).length;
+                uniqueWords.textContent = uniqueWordsCount;
+                
+                // Sort words by frequency
+                const sortedWords = Object.entries(frequency)
+                    .filter(([word]) => !excludeList.includes(word))
+                    .sort((a, b) => b[1] - a[1]);
+                
+                // Clear previous results
+                keywordList.innerHTML = '';
+                
+                // Display results
+                sortedWords.forEach(([word, count]) => {
+                    const density = (count / words.length * 100).toFixed(2);
+                    const keywordItem = document.createElement('div');
+                    keywordItem.className = 'keyword-item';
+                    
+                    keywordItem.innerHTML = `
+                        <div>
+                            <strong>${word}</strong>
+                            <span class="text-muted">(${count} occurrences)</span>
+                        </div>
+                        <div class="d-flex align-items-center" style="width: 200px;">
+                            <div class="progress flex-grow-1 me-2">
+                                <div class="progress-bar" role="progressbar" style="width: ${density}%" 
+                                     aria-valuenow="${density}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span>${density}%</span>
+                        </div>
+                    `;
+                    
+                    keywordList.appendChild(keywordItem);
+                });
+            }
+
+            analyzeBtn.addEventListener('click', analyzeText);
+        });
+    </script>
+</body>
+</html> 

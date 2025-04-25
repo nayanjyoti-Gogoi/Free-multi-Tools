@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online tools for image conversion, text processing, SEO analysis, calculations, and more. All tools are free to use and require no registration.">
+    <meta name="keywords" content="online tools, image converter, text tools, SEO tools, calculators, free tools">
+    <meta name="author" content="Multi-Tools">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Multi-Tools - Free Online Tools Collection">
+    <meta property="og:description" content="A collection of free online tools for various tasks including image conversion, text processing, SEO analysis, and calculations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://multitools.com">
+    <title>Multi-Tools - Free Online Tools Collection</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <div id="header-container"></div>
+    <div id="category-bar-container"></div>
+    <main class="container py-4">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h1 class="text-center">Welcome to Free Multi-Tools</h1>
+                <div class="search-container text-center">
+                    <input type="text" id="searchInput" class="form-control w-50 mx-auto" placeholder="Search for tools...">
+                </div>
+            </div>
+        </div>
+
+        <section id="image-tools">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3">Image Tools</h2>
+                    <div class="row g-4">
+                        <!-- Image to PNG Converter -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-file-earmark-image"></i>
+                                    </div>
+                                    <h5 class="card-title">Image to PNG Converter</h5>
+                                    <p class="card-text">Convert your images to PNG format easily.</p>
+                                    <a href="tools/image-to-png.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image to JPG Converter -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-file-earmark-image-fill"></i>
+                                    </div>
+                                    <h5 class="card-title">Image to JPG Converter</h5>
+                                    <p class="card-text">Convert your images to JPG format easily.</p>
+                                    <a href="tools/image-to-jpg.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image Resizer -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-arrows-angle-contract"></i>
+                                    </div>
+                                    <h5 class="card-title">Image Resizer</h5>
+                                    <p class="card-text">Resize your images to any dimension.</p>
+                                    <a href="tools/image-resizer.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image Compressor -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-file-earmark-zip"></i>
+                                    </div>
+                                    <h5 class="card-title">Image Compressor</h5>
+                                    <p class="card-text">Compress your images while maintaining quality.</p>
+                                    <a href="tools/image-compressor.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image Cropper -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-crop"></i>
+                                    </div>
+                                    <h5 class="card-title">Image Cropper</h5>
+                                    <p class="card-text">Crop your images with precision.</p>
+                                    <a href="tools/image-cropper.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image to Base64 -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-code-square"></i>
+                                    </div>
+                                    <h5 class="card-title">Image to Base64</h5>
+                                    <p class="card-text">Convert your images to Base64 format.</p>
+                                    <a href="tools/image-to-base64.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- GIF Maker -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-camera-reels"></i>
+                                    </div>
+                                    <h5 class="card-title">GIF Maker</h5>
+                                    <p class="card-text">Create animated GIFs from your images.</p>
+                                    <a href="tools/gif-maker.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- QR Code Generator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-qr-code"></i>
+                                    </div>
+                                    <h5 class="card-title">QR Code Generator</h5>
+                                    <p class="card-text">Create custom QR codes for your content.</p>
+                                    <a href="tools/qr-code-generator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Screenshot to PDF -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                    </div>
+                                    <h5 class="card-title">Screenshot to PDF</h5>
+                                    <p class="card-text">Convert screenshots to PDF format.</p>
+                                    <a href="tools/screenshot-to-pdf.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Image to PDF Maker -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-images"></i>
+                                    </div>
+                                    <h5 class="card-title">Image to PDF Maker</h5>
+                                    <p class="card-text">Convert multiple images into a single PDF document.</p>
+                                    <a href="tools/image-to-pdf.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="text-tools">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3">Text Tools</h2>
+                    <div class="row g-4">
+                        <!-- Word Counter -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-text-paragraph"></i>
+                                    </div>
+                                    <h5 class="card-title">Word Counter</h5>
+                                    <p class="card-text">Count words, characters, sentences, and paragraphs in your text.</p>
+                                    <a href="tools/word-counter.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Text to Speech -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-megaphone"></i>
+                                    </div>
+                                    <h5 class="card-title">Text to Speech</h5>
+                                    <p class="card-text">Convert your text into natural-sounding speech with voice selection.</p>
+                                    <a href="tools/text-to-speech.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Speech to Text -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-mic"></i>
+                                    </div>
+                                    <h5 class="card-title">Speech to Text</h5>
+                                    <p class="card-text">Convert your speech into text with real-time transcription.</p>
+                                    <a href="tools/speech-to-text.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="seo-tools">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3">SEO Tools</h2>
+                    <div class="row g-4">
+                        <!-- Keyword Density Checker -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-search"></i>
+                                    </div>
+                                    <h5 class="card-title">Keyword Density Checker</h5>
+                                    <p class="card-text">Analyze keyword density in your text content.</p>
+                                    <a href="tools/keyword-density-checker.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Meta Tag Generator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-tags"></i>
+                                    </div>
+                                    <h5 class="card-title">Meta Tag Generator</h5>
+                                    <p class="card-text">Generate SEO-friendly meta tags for your website.</p>
+                                    <a href="tools/meta-tag-generator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sitemap Generator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-diagram-3"></i>
+                                    </div>
+                                    <h5 class="card-title">Sitemap Generator</h5>
+                                    <p class="card-text">Create XML sitemaps for your website.</p>
+                                    <a href="tools/sitemap-generator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Backlink Checker -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-link-45deg"></i>
+                                    </div>
+                                    <h5 class="card-title">Backlink Checker</h5>
+                                    <p class="card-text">Analyze and check backlinks for any website URL.</p>
+                                    <a href="tools/backlink-checker.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- SERP Position Checker -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-graph-up"></i>
+                                    </div>
+                                    <h5 class="card-title">SERP Position Checker</h5>
+                                    <p class="card-text">Check your website's search engine rankings for keywords.</p>
+                                    <a href="tools/serp-position-checker.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="math-tools">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3">Math & Calculators</h2>
+                    <div class="row g-4">
+                        <!-- Percentage Calculator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-percent"></i>
+                                    </div>
+                                    <h5 class="card-title">Percentage Calculator</h5>
+                                    <p class="card-text">Calculate percentages, increases, and decreases with step-by-step formulas.</p>
+                                    <a href="tools/percentage-calculator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- BMI Calculator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-person-lines-fill"></i>
+                                    </div>
+                                    <h5 class="card-title">BMI Calculator</h5>
+                                    <p class="card-text">Calculate your Body Mass Index and understand your weight category.</p>
+                                    <a href="tools/bmi-calculator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Loan EMI Calculator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-cash-stack"></i>
+                                    </div>
+                                    <h5 class="card-title">Loan EMI Calculator</h5>
+                                    <p class="card-text">Calculate your monthly EMI and view detailed payment schedule.</p>
+                                    <a href="tools/loan-emi-calculator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="social-tools">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3">Social Media Tools</h2>
+                    <div class="row g-4">
+                        <!-- YouTube Thumbnail Downloader -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-youtube"></i>
+                                    </div>
+                                    <h5 class="card-title">YouTube Thumbnail Downloader</h5>
+                                    <p class="card-text">Download high-quality thumbnails from any YouTube video.</p>
+                                    <a href="tools/youtube-thumbnail-downloader.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Facebook Video Downloader -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-facebook"></i>
+                                    </div>
+                                    <h5 class="card-title">Facebook Video Downloader</h5>
+                                    <p class="card-text">Download videos from Facebook in your preferred quality.</p>
+                                    <a href="tools/facebook-video-downloader.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- YouTube Video Downloader -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-youtube"></i>
+                                    </div>
+                                    <h5 class="card-title">YouTube Video Downloader</h5>
+                                    <p class="card-text">Download YouTube videos in various qualities and formats.</p>
+                                    <a href="tools/youtube-video-downloader.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Instagram Video Downloader -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-instagram"></i>
+                                    </div>
+                                    <h5 class="card-title">Instagram Video Downloader</h5>
+                                    <p class="card-text">Download videos from Instagram posts and reels in high quality.</p>
+                                    <a href="tools/instagram-video-downloader.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="misc-tools">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-3">Miscellaneous Tools</h2>
+                    <div class="row g-4">
+                        <!-- Barcode Generator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-upc-scan"></i>
+                                    </div>
+                                    <h5 class="card-title">Barcode Generator</h5>
+                                    <p class="card-text">Generate various types of barcodes with customizable options.</p>
+                                    <a href="tools/barcode-generator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Resume Builder -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-file-earmark-person"></i>
+                                    </div>
+                                    <h5 class="card-title">Resume Builder</h5>
+                                    <p class="card-text">Create professional resumes with customizable templates and sections.</p>
+                                    <a href="tools/resume-builder.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Fake Address Generator -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <div class="tool-icon mb-3">
+                                        <i class="bi bi-geo-alt"></i>
+                                    </div>
+                                    <h5 class="card-title">Fake Address Generator</h5>
+                                    <p class="card-text">Generate realistic fake addresses for different countries in various formats.</p>
+                                    <a href="tools/fake-address-generator.html" class="btn btn-primary">Use Tool</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- About Section -->
+    <section class="about-section py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center mb-5">
+                    <h2 class="section-title">About Multi-Tools</h2>
+                    <div class="title-underline"></div>
+                    <p class="lead text-muted">Your Ultimate Online Toolkit for Everyday Tasks</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Mission Card -->
+                <div class="col-md-4">
+                    <div class="card h-100 about-card">
+                        <div class="card-body text-center">
+                            <div class="about-icon mb-3">
+                                <i class="bi bi-bullseye"></i>
+                            </div>
+                            <h3 class="card-title h4">Our Mission</h3>
+                            <p class="card-text">To provide free, high-quality online tools that make your digital tasks easier and more efficient. We believe in making technology accessible to everyone.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Card -->
+                <div class="col-md-4">
+                    <div class="card h-100 about-card">
+                        <div class="card-body text-center">
+                            <div class="about-icon mb-3">
+                                <i class="bi bi-tools"></i>
+                            </div>
+                            <h3 class="card-title h4">What We Offer</h3>
+                            <p class="card-text">A comprehensive collection of tools for image processing, text manipulation, SEO optimization, mathematical calculations, and more. All tools are free to use with no registration required.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Values Card -->
+                <div class="col-md-4">
+                    <div class="card h-100 about-card">
+                        <div class="card-body text-center">
+                            <div class="about-icon mb-3">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <h3 class="card-title h4">Our Values</h3>
+                            <p class="card-text">We are committed to user privacy, data security, and providing the best possible user experience. Your trust and satisfaction are our top priorities.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Section -->
+            <div class="row mt-5">
+                <div class="col-12 text-center mb-4">
+                    <h3 class="section-subtitle">Meet Our Team</h3>
+                </div>
+                <div class="col-md-4">
+                    <div class="team-member text-center">
+                        <div class="team-member-image mb-3">
+                            <img src="https://via.placeholder.com/150" alt="Team Member" class="rounded-circle">
+                        </div>
+                        <h4 class="h5">Nayanjyoti Gogoi</h4>
+                        <p class="text-muted">Founder & Lead Developer</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="team-member text-center">
+                        <div class="team-member-image mb-3">
+                            <img src="https://via.placeholder.com/150" alt="Team Member" class="rounded-circle">
+                        </div>
+                        <h4 class="h5">Nayanjyoti Gogoi</h4>
+                        <p class="text-muted">UI/UX Designer</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="team-member text-center">
+                        <div class="team-member-image mb-3">
+                            <img src="https://via.placeholder.com/150" alt="Team Member" class="rounded-circle">
+                        </div>
+                        <h4 class="h5">Nayanjyoti Gogoi</h4>
+                        <p class="text-muted">Content Manager</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <h3 class="section-subtitle">Get in Touch</h3>
+                    <p class="lead">Have questions or suggestions? We'd love to hear from you!</p>
+                    <div class="contact-links mt-3">
+                        <a href="mailto:gogoinayan73@gmail.com" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-envelope"></i> Email Us
+                        </a>
+                        <a href="#" class="btn btn-outline-primary me-2">
+                            <i class="bi bi-twitter"></i> Twitter
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h5 class="contact-number-details">contect No- 6901977121</h5>
+        </div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

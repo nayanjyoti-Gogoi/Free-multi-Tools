@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Speech - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        #textInput {
+            min-height: 200px;
+            resize: vertical;
+        }
+        .controls {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .voice-select {
+            width: 100%;
+        }
+        .playback-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        .rate-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">Text to Speech</h2>
+            <p class="text-center text-muted mb-4">Convert your text into natural-sounding speech</p>
+            
+            <div class="controls">
+                <div class="mb-3">
+                    <label for="voiceSelect" class="form-label">Select Voice:</label>
+                    <select class="form-select voice-select" id="voiceSelect">
+                        <option value="">Loading voices...</option>
+                    </select>
+                </div>
+                
+                <div class="rate-control">
+                    <label for="rateInput" class="form-label">Speech Rate:</label>
+                    <input type="range" class="form-range" id="rateInput" min="0.5" max="2" step="0.1" value="1">
+                    <span id="rateValue">1.0</span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="textInput" class="form-label">Enter your text:</label>
+                <textarea class="form-control" id="textInput" placeholder="Type or paste your text here..."></textarea>
+            </div>
+
+            <div class="playback-controls">
+                <button class="btn btn-primary" id="playButton">
+                    <i class="bi bi-play-fill"></i> Play
+                </button>
+                <button class="btn btn-secondary" id="pauseButton" disabled>
+                    <i class="bi bi-pause-fill"></i> Pause
+                </button>
+                <button class="btn btn-danger" id="stopButton" disabled>
+                    <i class="bi bi-stop-fill"></i> Stop
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const textInput = document.getElementById('textInput');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const rateInput = document.getElementById('rateInput');
+        const rateValue = document.getElementById('rateValue');
+        const playButton = document.getElementById('playButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const stopButton = document.getElementById('stopButton');
+
+        let speechSynthesis = window.speechSynthesis;
+        let utterance = null;
+
+        // Load available voices
+        function loadVoices() {
+            const voices = speechSynthesis.getVoices();
+            voiceSelect.innerHTML = voices
+                .filter(voice => voice.lang.includes('en'))
+                .map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`)
+                .join('');
+        }
+
+        // Load voices when they become available
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        // Update rate value display
+        rateInput.addEventListener('input', () => {
+            rateValue.textContent = rateInput.value;
+        });
+
+        // Play button click handler
+        playButton.addEventListener('click', () => {
+            if (utterance) {
+                speechSynthesis.resume();
+            } else {
+                const text = textInput.value.trim();
+                if (!text) {
+                    alert('Please enter some text to convert to speech');
+                    return;
+                }
+
+                utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = parseFloat(rateInput.value);
+                
+                const selectedVoice = voiceSelect.value;
+                if (selectedVoice) {
+                    const voices = speechSynthesis.getVoices();
+                    utterance.voice = voices.find(voice => voice.name === selectedVoice);
+                }
+
+                utterance.onend = () => {
+                    utterance = null;
+                    playButton.disabled = false;
+                    pauseButton.disabled = true;
+                    stopButton.disabled = true;
+                };
+
+                speechSynthesis.speak(utterance);
+            }
+
+            playButton.disabled = true;
+            pauseButton.disabled = false;
+            stopButton.disabled = false;
+        });
+
+        // Pause button click handler
+        pauseButton.addEventListener('click', () => {
+            speechSynthesis.pause();
+            playButton.disabled = false;
+            pauseButton.disabled = true;
+        });
+
+        // Stop button click handler
+        stopButton.addEventListener('click', () => {
+            speechSynthesis.cancel();
+            utterance = null;
+            playButton.disabled = false;
+            pauseButton.disabled = true;
+            stopButton.disabled = true;
+        });
+    </script>
+</body>
+</html> 

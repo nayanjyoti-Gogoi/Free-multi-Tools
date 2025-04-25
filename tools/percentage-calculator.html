@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .calculation-mode {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .result-card {
+            background-color: #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        .result-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .formula {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">Percentage Calculator</h2>
+            <p class="text-center text-muted mb-4">Calculate percentages, increases, and decreases</p>
+            
+            <div class="calculation-mode">
+                <div class="mb-3">
+                    <label class="form-label">Calculation Mode:</label>
+                    <select class="form-select" id="modeSelect">
+                        <option value="findPercentage">Find Percentage of a Number</option>
+                        <option value="findNumber">Find Number from Percentage</option>
+                        <option value="increase">Percentage Increase</option>
+                        <option value="decrease">Percentage Decrease</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="findPercentageForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="number1" class="form-label">Number:</label>
+                        <input type="number" class="form-control" id="number1" placeholder="Enter number">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="percentage1" class="form-label">Percentage:</label>
+                        <input type="number" class="form-control" id="percentage1" placeholder="Enter percentage">
+                    </div>
+                </div>
+            </div>
+
+            <div id="findNumberForm" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="number2" class="form-label">Percentage:</label>
+                        <input type="number" class="form-control" id="number2" placeholder="Enter percentage">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="percentage2" class="form-label">Of what number:</label>
+                        <input type="number" class="form-control" id="percentage2" placeholder="Enter number">
+                    </div>
+                </div>
+            </div>
+
+            <div id="increaseForm" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="originalValue" class="form-label">Original Value:</label>
+                        <input type="number" class="form-control" id="originalValue" placeholder="Enter original value">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="increasePercentage" class="form-label">Increase by (%):</label>
+                        <input type="number" class="form-control" id="increasePercentage" placeholder="Enter percentage">
+                    </div>
+                </div>
+            </div>
+
+            <div id="decreaseForm" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="originalValue2" class="form-label">Original Value:</label>
+                        <input type="number" class="form-control" id="originalValue2" placeholder="Enter original value">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="decreasePercentage" class="form-label">Decrease by (%):</label>
+                        <input type="number" class="form-control" id="decreasePercentage" placeholder="Enter percentage">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-primary" id="calculateButton">Calculate</button>
+                <button class="btn btn-secondary" id="clearButton">Clear</button>
+            </div>
+
+            <div class="result-card" id="resultCard">
+                <h5 class="mb-3">Result</h5>
+                <div class="result-value" id="resultValue">0</div>
+                <div class="formula" id="formulaText"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const modeSelect = document.getElementById('modeSelect');
+        const findPercentageForm = document.getElementById('findPercentageForm');
+        const findNumberForm = document.getElementById('findNumberForm');
+        const increaseForm = document.getElementById('increaseForm');
+        const decreaseForm = document.getElementById('decreaseForm');
+        const resultCard = document.getElementById('resultCard');
+        const resultValue = document.getElementById('resultValue');
+        const formulaText = document.getElementById('formulaText');
+        const calculateButton = document.getElementById('calculateButton');
+        const clearButton = document.getElementById('clearButton');
+
+        // Show/hide forms based on selected mode
+        modeSelect.addEventListener('change', () => {
+            const mode = modeSelect.value;
+            findPercentageForm.style.display = mode === 'findPercentage' ? 'block' : 'none';
+            findNumberForm.style.display = mode === 'findNumber' ? 'block' : 'none';
+            increaseForm.style.display = mode === 'increase' ? 'block' : 'none';
+            decreaseForm.style.display = mode === 'decrease' ? 'block' : 'none';
+            resultCard.style.display = 'none';
+        });
+
+        // Calculate button click handler
+        calculateButton.addEventListener('click', () => {
+            const mode = modeSelect.value;
+            let result = 0;
+            let formula = '';
+
+            switch (mode) {
+                case 'findPercentage':
+                    const number1 = parseFloat(document.getElementById('number1').value);
+                    const percentage1 = parseFloat(document.getElementById('percentage1').value);
+                    if (!isNaN(number1) && !isNaN(percentage1)) {
+                        result = (number1 * percentage1) / 100;
+                        formula = `${number1} × ${percentage1}% = ${result}`;
+                    }
+                    break;
+
+                case 'findNumber':
+                    const number2 = parseFloat(document.getElementById('number2').value);
+                    const percentage2 = parseFloat(document.getElementById('percentage2').value);
+                    if (!isNaN(number2) && !isNaN(percentage2)) {
+                        result = (number2 * 100) / percentage2;
+                        formula = `(${number2} × 100) ÷ ${percentage2}% = ${result}`;
+                    }
+                    break;
+
+                case 'increase':
+                    const originalValue = parseFloat(document.getElementById('originalValue').value);
+                    const increasePercentage = parseFloat(document.getElementById('increasePercentage').value);
+                    if (!isNaN(originalValue) && !isNaN(increasePercentage)) {
+                        result = originalValue + (originalValue * increasePercentage / 100);
+                        formula = `${originalValue} + (${originalValue} × ${increasePercentage}%) = ${result}`;
+                    }
+                    break;
+
+                case 'decrease':
+                    const originalValue2 = parseFloat(document.getElementById('originalValue2').value);
+                    const decreasePercentage = parseFloat(document.getElementById('decreasePercentage').value);
+                    if (!isNaN(originalValue2) && !isNaN(decreasePercentage)) {
+                        result = originalValue2 - (originalValue2 * decreasePercentage / 100);
+                        formula = `${originalValue2} - (${originalValue2} × ${decreasePercentage}%) = ${result}`;
+                    }
+                    break;
+            }
+
+            if (formula) {
+                resultValue.textContent = result.toFixed(2);
+                formulaText.textContent = formula;
+                resultCard.style.display = 'block';
+            } else {
+                alert('Please enter valid numbers');
+            }
+        });
+
+        // Clear button click handler
+        clearButton.addEventListener('click', () => {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => input.value = '');
+            resultCard.style.display = 'none';
+        });
+    </script>
+</body>
+</html> 

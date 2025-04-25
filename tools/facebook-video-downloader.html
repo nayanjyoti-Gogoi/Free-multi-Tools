@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Video Downloader - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .video-preview {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+        .quality-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .quality-option {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .quality-option:hover {
+            background-color: #f8f9fa;
+            border-color: #0d6efd;
+        }
+        .quality-option.selected {
+            background-color: #e7f1ff;
+            border-color: #0d6efd;
+        }
+        .loading-spinner {
+            display: none;
+            margin: 1rem 0;
+        }
+        .error-message {
+            color: #dc3545;
+            display: none;
+            margin-top: 1rem;
+        }
+        .video-info {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        .video-info p {
+            margin-bottom: 0.5rem;
+        }
+        .video-info .title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .video-info .duration {
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">Facebook Video Downloader</h2>
+            <p class="text-center text-muted mb-4">Download videos from Facebook in your preferred quality</p>
+            
+            <div class="mb-3">
+                <label for="videoUrl" class="form-label">Facebook Video URL:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="videoUrl" placeholder="Enter Facebook video URL">
+                    <button class="btn btn-primary" id="fetchButton">Fetch Video</button>
+                </div>
+            </div>
+
+            <div class="loading-spinner text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Fetching video information...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Please enter a valid Facebook video URL
+            </div>
+
+            <div class="video-info" id="videoInfo">
+                <p class="title" id="videoTitle">Video Title</p>
+                <p class="duration" id="videoDuration">Duration: 00:00</p>
+            </div>
+
+            <div id="videoContainer" style="display: none;">
+                <h5 class="mb-3">Available Qualities</h5>
+                <div class="quality-options" id="qualityOptions">
+                    <div class="quality-option" data-quality="hd">
+                        <h6>HD Quality</h6>
+                        <p class="text-muted">1280x720</p>
+                    </div>
+                    <div class="quality-option" data-quality="sd">
+                        <h6>Standard Quality</h6>
+                        <p class="text-muted">640x360</p>
+                    </div>
+                    <div class="quality-option" data-quality="low">
+                        <h6>Low Quality</h6>
+                        <p class="text-muted">320x180</p>
+                    </div>
+                </div>
+
+                <video id="videoPreview" class="video-preview" controls>
+                    Your browser does not support the video tag.
+                </video>
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-success" id="downloadButton">
+                        <i class="bi bi-download"></i> Download Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videoUrl = document.getElementById('videoUrl');
+        const fetchButton = document.getElementById('fetchButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoContainer = document.getElementById('videoContainer');
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const qualityOptions = document.querySelectorAll('.quality-option');
+        const videoInfo = document.getElementById('videoInfo');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoDuration = document.getElementById('videoDuration');
+
+        let currentVideoId = '';
+        let selectedQuality = 'hd';
+        let videoData = null;
+
+        function extractVideoId(url) {
+            // This is a simplified version. In a real implementation, you would need to handle various Facebook URL formats
+            const regExp = /facebook\.com\/(?:watch\/)?\?v=([^&]+)/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+
+        function formatDuration(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = Math.floor(seconds % 60);
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function showVideoInfo(data) {
+            videoTitle.textContent = data.title || 'Untitled Video';
+            videoDuration.textContent = `Duration: ${formatDuration(data.duration)}`;
+            videoInfo.style.display = 'block';
+        }
+
+        function showVideo(videoId) {
+            // In a real implementation, you would fetch the actual video URL from Facebook's API
+            // For demonstration, we'll use a placeholder video
+            const videoUrl = `https://example.com/videos/${videoId}/${selectedQuality}.mp4`;
+            videoPreview.src = videoUrl;
+            videoPreview.style.display = 'block';
+            videoContainer.style.display = 'block';
+        }
+
+        function validateUrl(url) {
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                errorMessage.style.display = 'block';
+                videoContainer.style.display = 'none';
+                videoInfo.style.display = 'none';
+                return null;
+            }
+            errorMessage.style.display = 'none';
+            return videoId;
+        }
+
+        fetchButton.addEventListener('click', () => {
+            const videoId = validateUrl(videoUrl.value);
+            if (!videoId) return;
+
+            loadingSpinner.style.display = 'block';
+            videoContainer.style.display = 'none';
+            videoInfo.style.display = 'none';
+
+            // Simulate API call to fetch video information
+            setTimeout(() => {
+                currentVideoId = videoId;
+                videoData = {
+                    id: videoId,
+                    title: 'Sample Facebook Video',
+                    duration: 120, // 2 minutes
+                    qualities: ['hd', 'sd', 'low']
+                };
+                
+                showVideoInfo(videoData);
+                showVideo(videoId);
+                loadingSpinner.style.display = 'none';
+            }, 1500);
+        });
+
+        qualityOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                qualityOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                selectedQuality = option.dataset.quality;
+                if (currentVideoId) {
+                    showVideo(currentVideoId);
+                }
+            });
+        });
+
+        downloadButton.addEventListener('click', () => {
+            if (!currentVideoId) return;
+
+            // In a real implementation, you would use the actual video URL
+            const videoUrl = `https://example.com/videos/${currentVideoId}/${selectedQuality}.mp4`;
+            const link = document.createElement('a');
+            link.href = videoUrl;
+            link.download = `facebook_video_${currentVideoId}_${selectedQuality}.mp4`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Select HD quality by default
+        qualityOptions[0].classList.add('selected');
+    </script>
+</body>
+</html> 

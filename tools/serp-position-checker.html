@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SERP Position Checker - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .result-card {
+            margin-top: 1.5rem;
+            display: none;
+        }
+        .loading {
+            display: none;
+        }
+        .serp-item {
+            border-left: 4px solid #0d6efd;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+        .position-badge {
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">SERP Position Checker</h2>
+            <p class="text-center text-muted mb-4">Check your website's search engine rankings for specific keywords</p>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="urlInput">Website URL</label>
+                        <input type="url" id="urlInput" class="form-control" placeholder="Enter your website URL" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="keywordInput">Keyword</label>
+                        <input type="text" id="keywordInput" class="form-control" placeholder="Enter keyword to check" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-primary" id="checkButton">Check Position</button>
+            </div>
+
+            <div class="loading text-center mt-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Checking search engine rankings...</p>
+            </div>
+
+            <div class="result-card">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">SERP Position Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6>Current Position</h6>
+                                        <h3 id="currentPosition">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6>Previous Position</h6>
+                                        <h3 id="previousPosition">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h6>Change</h6>
+                                        <h3 id="positionChange">-</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="serpResults"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('checkButton').addEventListener('click', async () => {
+            const url = document.getElementById('urlInput').value.trim();
+            const keyword = document.getElementById('keywordInput').value.trim();
+            
+            if (!url || !keyword) {
+                alert('Please enter both URL and keyword');
+                return;
+            }
+
+            // Show loading state
+            document.querySelector('.loading').style.display = 'block';
+            document.querySelector('.result-card').style.display = 'none';
+
+            try {
+                // Simulate API call (replace with actual API endpoint)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Mock data for demonstration
+                const mockData = {
+                    currentPosition: 3,
+                    previousPosition: 5,
+                    positionChange: "+2",
+                    serpResults: [
+                        {
+                            position: 1,
+                            title: "Example Website 1",
+                            url: "https://example1.com",
+                            snippet: "This is a sample search result snippet for the first position."
+                        },
+                        {
+                            position: 2,
+                            title: "Example Website 2",
+                            url: "https://example2.com",
+                            snippet: "This is a sample search result snippet for the second position."
+                        },
+                        {
+                            position: 3,
+                            title: "Your Website",
+                            url: url,
+                            snippet: "This is your website's search result snippet."
+                        }
+                    ]
+                };
+
+                // Update UI with results
+                document.getElementById('currentPosition').textContent = mockData.currentPosition;
+                document.getElementById('previousPosition').textContent = mockData.previousPosition;
+                document.getElementById('positionChange').textContent = mockData.positionChange;
+
+                const serpResults = document.getElementById('serpResults');
+                serpResults.innerHTML = mockData.serpResults.map(result => `
+                    <div class="serp-item ${result.url === url ? 'bg-info bg-opacity-10' : ''}">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-primary position-badge me-2">${result.position}</span>
+                            <h5 class="mb-0"><a href="${result.url}" target="_blank">${result.title}</a></h5>
+                        </div>
+                        <p class="mb-0 text-muted">${result.snippet}</p>
+                    </div>
+                `).join('');
+
+                // Show results
+                document.querySelector('.loading').style.display = 'none';
+                document.querySelector('.result-card').style.display = 'block';
+            } catch (error) {
+                alert('Error checking SERP position. Please try again.');
+                document.querySelector('.loading').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Resizer - Multi-Tools</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header will be loaded dynamically -->
+    <div id="header-container"></div>
+
+    <main class="container my-4">
+        <div class="tool-container">
+            <div class="tool-header">
+                <h1>Image Resizer</h1>
+                <p class="lead">Resize your images to any dimension</p>
+            </div>
+
+            <div class="tool-content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="imageInput" class="form-label">Select Image</label>
+                            <input type="file" class="form-control" id="imageInput" accept="image/*">
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="width" class="form-label">Width (px)</label>
+                                <input type="number" class="form-control" id="width" min="1">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="height" class="form-label">Height (px)</label>
+                                <input type="number" class="form-control" id="height" min="1">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="maintainAspect" checked>
+                                <label class="form-check-label" for="maintainAspect">
+                                    Maintain Aspect Ratio
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button id="resizeBtn" class="btn btn-primary w-100">Resize Image</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="preview-container text-center">
+                            <img id="preview" class="img-fluid mb-3" style="display: none;">
+                            <div id="originalSize" class="text-muted mb-2"></div>
+                            <div id="downloadContainer" style="display: none;">
+                                <a id="downloadLink" class="btn btn-success" download="resized.png">
+                                    <i class="fas fa-download"></i> Download Resized Image
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer will be loaded dynamically -->
+    <div id="footer-container"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main JS -->
+    <script src="../js/main.js"></script>
+    <!-- Tool specific JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageInput = document.getElementById('imageInput');
+            const resizeBtn = document.getElementById('resizeBtn');
+            const preview = document.getElementById('preview');
+            const downloadContainer = document.getElementById('downloadContainer');
+            const downloadLink = document.getElementById('downloadLink');
+            const widthInput = document.getElementById('width');
+            const heightInput = document.getElementById('height');
+            const maintainAspect = document.getElementById('maintainAspect');
+            const originalSize = document.getElementById('originalSize');
+
+            let originalWidth = 0;
+            let originalHeight = 0;
+
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.onload = function() {
+                            originalWidth = img.width;
+                            originalHeight = img.height;
+                            originalSize.textContent = `Original Size: ${originalWidth} x ${originalHeight} px`;
+                            
+                            preview.src = e.target.result;
+                            preview.style.display = 'block';
+                            
+                            widthInput.value = originalWidth;
+                            heightInput.value = originalHeight;
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function updateDimensions(input, otherInput, aspectRatio) {
+                if (maintainAspect.checked && aspectRatio) {
+                    if (input === widthInput) {
+                        heightInput.value = Math.round(input.value / aspectRatio);
+                    } else {
+                        widthInput.value = Math.round(input.value * aspectRatio);
+                    }
+                }
+            }
+
+            widthInput.addEventListener('input', function() {
+                updateDimensions(widthInput, heightInput, originalWidth / originalHeight);
+            });
+
+            heightInput.addEventListener('input', function() {
+                updateDimensions(heightInput, widthInput, originalWidth / originalHeight);
+            });
+
+            resizeBtn.addEventListener('click', function() {
+                const file = imageInput.files[0];
+                if (!file) {
+                    alert('Please select an image first');
+                    return;
+                }
+
+                const width = parseInt(widthInput.value);
+                const height = parseInt(heightInput.value);
+
+                if (isNaN(width) || isNaN(height) || width <= 0 || height <= 0) {
+                    alert('Please enter valid dimensions');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const resizedData = canvas.toDataURL('image/png');
+                        downloadLink.href = resizedData;
+                        downloadContainer.style.display = 'block';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+</body>
+</html> 

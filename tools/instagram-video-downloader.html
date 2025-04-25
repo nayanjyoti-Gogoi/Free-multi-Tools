@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Video Downloader - Multi-Tools Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .video-preview {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+        .loading-spinner {
+            display: none;
+            margin: 1rem 0;
+        }
+        .error-message {
+            color: #dc3545;
+            display: none;
+            margin-top: 1rem;
+        }
+        .video-info {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        .video-info p {
+            margin-bottom: 0.5rem;
+        }
+        .video-info .title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .video-info .details {
+            color: #6c757d;
+        }
+        .download-options {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+        .download-options p {
+            margin-bottom: 0.5rem;
+        }
+        .quality-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .quality-option input[type="radio"] {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tool-container">
+            <h2 class="text-center mb-4">Instagram Video Downloader</h2>
+            <p class="text-center text-muted mb-4">Download videos from Instagram posts and reels in high quality</p>
+            
+            <div class="mb-3">
+                <label for="postUrl" class="form-label">Instagram Post/Reel URL:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="postUrl" placeholder="Enter Instagram post or reel URL">
+                    <button class="btn btn-primary" id="fetchButton">Fetch Video</button>
+                </div>
+            </div>
+
+            <div class="loading-spinner text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Fetching video information...</p>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                Please enter a valid Instagram URL
+            </div>
+
+            <div class="video-info" id="videoInfo">
+                <p class="title" id="videoTitle">Post Title</p>
+                <p class="details" id="videoDetails">Likes: 0 • Comments: 0</p>
+            </div>
+
+            <div id="videoContainer" style="display: none;">
+                <video id="videoPreview" class="video-preview" controls>
+                    Your browser does not support the video tag.
+                </video>
+
+                <div class="download-options" id="downloadOptions">
+                    <h5 class="mb-3">Download Options</h5>
+                    <div class="quality-option">
+                        <input type="radio" id="qualityHigh" name="quality" value="high" checked>
+                        <label for="qualityHigh">High Quality (1080p)</label>
+                    </div>
+                    <div class="quality-option">
+                        <input type="radio" id="qualityMedium" name="quality" value="medium">
+                        <label for="qualityMedium">Medium Quality (720p)</label>
+                    </div>
+                    <div class="quality-option">
+                        <input type="radio" id="qualityLow" name="quality" value="low">
+                        <label for="qualityLow">Low Quality (480p)</label>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button class="btn btn-success" id="downloadButton">
+                            <i class="bi bi-download"></i> Download Video
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const postUrl = document.getElementById('postUrl');
+        const fetchButton = document.getElementById('fetchButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoContainer = document.getElementById('videoContainer');
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const errorMessage = document.getElementById('errorMessage');
+        const videoInfo = document.getElementById('videoInfo');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoDetails = document.getElementById('videoDetails');
+        const downloadOptions = document.getElementById('downloadOptions');
+
+        let currentPostId = '';
+        let selectedQuality = 'high';
+        let postData = null;
+
+        function extractPostId(url) {
+            // This is a simplified version. In a real implementation, you would need to handle various Instagram URL formats
+            const regExp = /instagram\.com\/(?:p|reel)\/([^\/\?]+)/;
+            const match = url.match(regExp);
+            return match ? match[1] : null;
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function showVideoInfo(data) {
+            videoTitle.textContent = data.title || 'Instagram Post';
+            videoDetails.textContent = `Likes: ${formatNumber(data.likes)} • Comments: ${formatNumber(data.comments)}`;
+            videoInfo.style.display = 'block';
+        }
+
+        function showVideo(postId) {
+            // In a real implementation, you would fetch the actual video URL from Instagram's API
+            const videoUrl = `https://example.com/instagram/videos/${postId}`;
+            videoPreview.src = videoUrl;
+            videoPreview.style.display = 'block';
+            videoContainer.style.display = 'block';
+            downloadOptions.style.display = 'block';
+        }
+
+        function validateUrl(url) {
+            const postId = extractPostId(url);
+            if (!postId) {
+                errorMessage.style.display = 'block';
+                videoContainer.style.display = 'none';
+                videoInfo.style.display = 'none';
+                return null;
+            }
+            errorMessage.style.display = 'none';
+            return postId;
+        }
+
+        fetchButton.addEventListener('click', () => {
+            const postId = validateUrl(postUrl.value);
+            if (!postId) return;
+
+            loadingSpinner.style.display = 'block';
+            videoContainer.style.display = 'none';
+            videoInfo.style.display = 'none';
+
+            // Simulate API call to fetch video information
+            setTimeout(() => {
+                currentPostId = postId;
+                postData = {
+                    id: postId,
+                    title: 'Instagram Post',
+                    likes: 1000000,
+                    comments: 50000,
+                    qualities: ['high', 'medium', 'low']
+                };
+                
+                showVideoInfo(postData);
+                showVideo(postId);
+                loadingSpinner.style.display = 'none';
+            }, 1500);
+        });
+
+        document.querySelectorAll('input[name="quality"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                selectedQuality = e.target.value;
+            });
+        });
+
+        downloadButton.addEventListener('click', () => {
+            if (!currentPostId) return;
+
+            // In a real implementation, you would use the actual video URL
+            const fileName = `instagram_video_${currentPostId}_${selectedQuality}.mp4`;
+            const link = document.createElement('a');
+            link.href = `https://example.com/instagram/videos/${currentPostId}/${selectedQuality}`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
+</body>
+</html> 
